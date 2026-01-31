@@ -1,4 +1,61 @@
 @import "tailwindcss";
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "sabi-theme";
+  default: true; /* set as default */
+  prefersdark: false; /* set as default dark mode (prefers-color-scheme:dark) */
+  color-scheme: light; /* color of browser-provided UI */
+
+  /* Base (paper) */
+  --color-base-100: oklch(96% 0.01 85);  /* #F3F1EE (paper) */
+  --color-base-200: oklch(93% 0.01 85);  /* slightly darker paper */
+  --color-base-300: oklch(90% 0.01 85);  /* card borders / subtle panels */
+  --color-base-content: oklch(23% 0.01 70); /* #2E2E2C (ink) */
+
+  /* Brand */
+  --color-primary: oklch(58% 0.04 125);        /* #7C8473 (sage) */
+  --color-primary-content: oklch(96% 0.01 85); /* #F3F1EE (paper text) */
+
+  --color-secondary: oklch(76% 0.02 75);        /* #B6ADA3 (warm stone) */
+  --color-secondary-content: oklch(23% 0.01 70);/* #2E2E2C (ink) */
+
+  /* Accent (subtle olive/sage highlight) */
+  --color-accent: oklch(68% 0.04 135);          /* complementary sage accent */
+  --color-accent-content: oklch(96% 0.01 85);   /* paper */
+
+  /* Neutral (UI chrome / muted) */
+  --color-neutral: oklch(66% 0.01 85);          /* #9A9A95 (tertiary stone/gray) */
+  --color-neutral-content: oklch(23% 0.01 70);  /* ink */
+
+  /* Semantic */
+  --color-info: oklch(72% 0.03 220);            /* calm info */
+  --color-info-content: oklch(23% 0.01 70);
+
+  --color-success: oklch(70% 0.06 145);         /* muted success (not neon) */
+  --color-success-content: oklch(23% 0.01 70);
+
+  --color-warning: oklch(82% 0.05 85);          /* warm warning */
+  --color-warning-content: oklch(23% 0.01 70);
+
+  --color-error: oklch(62% 0.10 30);            /* soft error */
+  --color-error-content: oklch(96% 0.01 85);
+
+  /* border radius */
+  --radius-selector: 1rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+
+  /* base sizes */
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  /* border size */
+  --border: 1px;
+
+  /* effects */
+  --depth: 1;
+  --noise: 0;
+}
 
 :root {
   --background: #ffffff;
