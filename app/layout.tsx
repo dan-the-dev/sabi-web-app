@@ -4,6 +4,9 @@ import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthCallbackHandler } from "@/app/components/AuthCallbackHandler";
+import { LogoutButton } from "./components/LogoutButton";
+import { createClient } from "@/lib/supabase/server";
+import { createAuth } from "@/lib/supabase/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +26,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const auth = createAuth(supabase);
+  const user = await auth.getUser();
+
   return (
     <html lang="en">
       <body
@@ -36,7 +43,9 @@ export default function RootLayout({
       >
         <AuthCallbackHandler />
         <header className="shrink-0 border-b border-base-300 bg-base-100">
-          <div className="flex items-center justify-center px-4 py-3 md:justify-start">
+          <div
+            className={`flex items-center px-4 py-3 ${user ? "justify-between" : "justify-center md:justify-start"}`}
+          >
             <Link href="/" className="w-40 shrink-0 flex justify-center">
               <Image
                 src="/sabi-banner.png"
@@ -47,6 +56,7 @@ export default function RootLayout({
                 className="h-auto w-24 object-contain object-left md:object-left"
               />
             </Link>
+            {user ? <LogoutButton /> : null}
           </div>
         </header>
         <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
