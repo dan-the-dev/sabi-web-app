@@ -60,5 +60,24 @@ export function createAuth(supabase: SupabaseClient) {
       if (error) return null;
       return data.user;
     },
+
+    async resetPasswordForEmail(
+      email: string,
+      redirectTo: string
+    ): Promise<{ success: boolean; error?: string }> {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo,
+      });
+      if (error) return { success: false, error: error.message };
+      return { success: true };
+    },
+
+    async updatePassword(
+      newPassword: string
+    ): Promise<{ success: boolean; error?: string }> {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) return { success: false, error: error.message };
+      return { success: true };
+    },
   };
 }

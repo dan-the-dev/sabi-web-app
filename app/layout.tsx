@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AuthCallbackHandler } from "@/app/components/AuthCallbackHandler";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} flex h-screen flex-col antialiased`}
         data-theme="sabi-theme"
       >
+        <AuthCallbackHandler />
         <header className="shrink-0 border-b border-base-300 bg-base-100">
           <div className="flex items-center justify-center px-4 py-3 md:justify-start">
             <Link href="/" className="w-40 shrink-0 flex justify-center">

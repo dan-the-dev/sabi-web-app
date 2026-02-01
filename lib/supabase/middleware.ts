@@ -32,10 +32,16 @@ export async function updateSession(request: NextRequest) {
 
   const isAuthPage =
     request.nextUrl.pathname === "/login" ||
-    request.nextUrl.pathname === "/signup";
+    request.nextUrl.pathname === "/signup" ||
+    request.nextUrl.pathname === "/forgot-password" ||
+    request.nextUrl.pathname === "/reset-password";
   const isProtected = request.nextUrl.pathname === "/";
+  const redirectToHomeWhenLoggedIn =
+    request.nextUrl.pathname === "/login" ||
+    request.nextUrl.pathname === "/signup" ||
+    request.nextUrl.pathname === "/forgot-password";
 
-  if (isAuthPage && user) {
+  if (redirectToHomeWhenLoggedIn && user) {
     const redirectResponse = NextResponse.redirect(new URL("/", request.url));
     response.cookies.getAll().forEach((cookie) =>
       redirectResponse.cookies.set(cookie.name, cookie.value)
