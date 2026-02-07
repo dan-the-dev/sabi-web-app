@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { transcribeAudio } from "@/app/actions/transcribe";
 
-const MAX_DURATION_MS = 3 * 60 * 1000; // 3 minutes
+const MAX_DURATION_MS = 12 * 60 * 1000; // 12 minutes
 
 function formatTime(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "0:00";
@@ -21,6 +22,7 @@ export function VoiceBar() {
   const [playbackCurrentTime, setPlaybackCurrentTime] = useState(0);
   const [playbackDuration, setPlaybackDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const playbackAudioRef = useRef<HTMLAudioElement | null>(null);
   const playbackTickRef = useRef<number | null>(null);
@@ -160,6 +162,29 @@ export function VoiceBar() {
     }
     setStatus("idle");
     setPlaybackError(null);
+  }, [recordedBlobUrl]);
+
+  const handleSubmit = useCallback(async () => {
+    if (!recordedBlobUrl) return;
+    setIsSubmitting(true);
+    setPlaybackError(null);
+    try {
+      const res = await fetch(recordedBlobUrl);
+      const blob = await res.blob();
+      const formData = new FormData();
+      formData.append("audio", blob, "recording.webm");
+      const result = await transcribeAudio(formData);
+      if (result.success) {
+        console.log("Transcription:", result);
+      } else {
+        setPlaybackError(result.error);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Submit failed";
+      setPlaybackError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }, [recordedBlobUrl]);
 
   // Keep duration ref in sync for seek handler
@@ -355,7 +380,7 @@ export function VoiceBar() {
               </svg>
             </button>
             <p className="text-center text-xs text-base-content/50">
-              Up to 3 minutes
+              Up to 12 minutes
             </p>
           </div>
         )}
@@ -372,7 +397,7 @@ export function VoiceBar() {
               aria-label="Volume level"
             />
             <p className="font-mono text-lg tabular-nums text-base-content/70">
-              {formatTime(recordingElapsed)} / 3:00
+              {formatTime(recordingElapsed)} / 12:00
             </p>
             <button
               type="button"
@@ -391,7 +416,7 @@ export function VoiceBar() {
               </svg>
             </button>
             <p className="text-center text-xs text-base-content/50">
-              Tap to stop · Auto-stops at 3 min
+              Tap to stop · Auto-stops at 12 minutes
             </p>
           </div>
         )}
@@ -480,7 +505,34 @@ export function VoiceBar() {
                 </svg>
               </button>
             </div>
-            <div className="flex flex-col items-center justify-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="btn btn-primary gap-2"
+                aria-label="Submit voice message"
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm" />
+                    Submitting…
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="size-5"
+                      aria-hidden
+                    >
+                      <path d="M3 20.5v-17c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V7l8-3.5V4c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v15c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5v-2.5l-8-3.5v2.5c0 .83-.67 1.5-1.5 1.5S3 21.33 3 20.5z" />
+                    </svg>
+                    Submit
+                  </>
+                )}
+              </button>
               <button
                 type="button"
                 onClick={handleDelete}
@@ -498,10 +550,10 @@ export function VoiceBar() {
                 </svg>
                 Delete
               </button>
-              <p className="text-center text-xs text-secondary">
-                Listen or delete to record again
-              </p>
             </div>
+            <p className="text-center text-xs text-secondary">
+              Submit to transcribe, or listen / delete to record again
+            </p>
           </div>
         )}
       </div>
